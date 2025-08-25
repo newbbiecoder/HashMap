@@ -10,7 +10,7 @@ class HashMap {
         this.loadFactor = loadFactor;
         this.capacity = 16;
         this.head = null;
-        this.arr = [];
+        this.arr = new Array(16).fill(undefined);
         this.keyArr = [];
         this.alreadyPresent = false;
     }
@@ -36,7 +36,13 @@ class HashMap {
         let n = 0;
         for(let i = 0; i < this.arr.length; i++) {
             if(typeof this.arr[i] !== 'undefined') {
-                n += 1;
+                if(this.arr[i].nextNode === null) {
+                    n += 1;
+                }
+                while(this.arr[i].nextNode != null) {
+                    this.arr[i] = this.arr[i].nextNode;
+                    n += 1;
+                }
             }
         }
         return n;
@@ -46,7 +52,7 @@ class HashMap {
         let index = this.hash(key);
 
         let nodesFilled = this.length();
-        let factor = nodesFilled / 16;
+        let factor = nodesFilled / this.capacity;
 
         if(factor > this.loadFactor) {
             this.capacity *= 2
