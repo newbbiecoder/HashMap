@@ -11,22 +11,46 @@ class HashMap {
         this.capacity = 16;
         this.head = null;
         this.arr = [];
+        this.keyArr = [];
+        this.alreadyPresent = false;
     }
 
     hash(key) {
         let hashCode = 0;
-
         const primeNumber = 31;
         for(let i = 0; i < key.length; i++) {
             hashCode = primeNumber * hashCode + key.charCodeAt(i);
             hashCode %= 16;
         }
 
+        if(this.keyArr.includes(key)) {
+            this.alreadyPresent = true;
+            return hashCode;
+        }
+
+        this.keyArr.push(key);
         return hashCode
+    }
+
+    length() {
+        let n = 0;
+        for(let i = 0; i < this.arr.length; i++) {
+            if(typeof this.arr[i] !== 'undefined') {
+                n += 1;
+            }
+        }
+        return n;
     }
 
     set(key, value) {
         let index = this.hash(key);
+
+        let nodesFilled = this.length();
+        let factor = nodesFilled / 16;
+
+        if(factor > this.loadFactor) {
+            this.capacity *= 2
+        }
 
         if(typeof this.arr[index] === 'undefined'){
             this.head = null;
@@ -47,16 +71,25 @@ class HashMap {
             current = current.nextNode
         }
 
+        if(this.alreadyPresent === true) {
+            current.value = newNode.value;
+            return;
+        }
+
         current.nextNode = newNode;
     }
     get() {
         return this.arr;
     }
+    getCapacity() {
+        return this.capacity;
+    }
 }
 
 const test = new HashMap(0.75);
 test.set('apple', 'red')
-test.set('banana', 'yellow')
+test.set('banana', 'yellow');
+test.set('banana', 'skibidi');
 test.set('carrot', 'orange')
 test.set('dog', 'brown')
 test.set('elephant', 'gray')
@@ -69,3 +102,5 @@ test.set('kite', 'pink')
 test.set('lion', 'golden')
 
 console.log(test.get());
+console.log(test.length());
+console.log(test.getCapacity());
