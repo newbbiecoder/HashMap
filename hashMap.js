@@ -1,5 +1,6 @@
 class Node {
-    constructor(value = null) {
+    constructor(value = null, key) {
+        this.key = key;
         this.value = value;
         this.nextNode = null;
     }
@@ -12,6 +13,7 @@ class HashMap {
         this.head = null;
         this.arr = new Array(16).fill(undefined);
         this.keyArr = [];
+        this.valueArr = [];
         this.alreadyPresent = false;
     }
 
@@ -35,21 +37,19 @@ class HashMap {
     length() {
         let n = 0;
         for(let i = 0; i < this.arr.length; i++) {
-            if(typeof this.arr[i] !== 'undefined') {
-                if(this.arr[i].nextNode === null) {
-                    n += 1;
-                }
-                while(this.arr[i].nextNode != null) {
-                    this.arr[i] = this.arr[i].nextNode;
-                    n += 1;
-                }
-            }
+            let node = this.arr[i]
+            while(node !== undefined && node !== null) {
+                n++
+                node = node.nextNode
+            }         
         }
+
         return n;
     }
 
     set(key, value) {
         let index = this.hash(key);
+        this.valueArr.push(value);
 
         let nodesFilled = this.length();
         let factor = nodesFilled / this.capacity;
@@ -66,7 +66,7 @@ class HashMap {
             this.head = this.arr[index];
         }
 
-        let newNode = new Node(value);
+        let newNode = new Node(value, key);
         if(this.head === null) {
             this.arr[index] = newNode;
             return;
@@ -79,16 +79,82 @@ class HashMap {
 
         if(this.alreadyPresent === true) {
             current.value = newNode.value;
+            this.alreadyPresent = false;
             return;
         }
 
         current.nextNode = newNode;
     }
-    get() {
-        return this.arr;
+
+    get(key) {
+        for(let i = 0; i < this.arr.length; i++) {
+            let node = this.arr[i];
+
+            while(node !== undefined && node !== null) {
+                if(node.key === key) return node.value;
+                node = node.nextNode;
+            }
+        }
+        return false;
     }
+
+    has(key) {
+        for(let i = 0; i < this.arr.length; i++) {
+            let node = this.arr[i];
+
+            while(node !== undefined && node !== null) {
+                if(node.key === key) {
+                    return true;
+                }
+                node = node.nextNode;
+            }
+        }
+        return false;
+    }
+
+    remove(key) {
+        let index = this.hash(key);
+        let prev = null;
+        let node = this.arr[index];
+
+        while(node !== null) {
+            if(node.key === key) {
+                if(prev === null) {
+                    this.arr[index] = node.nextNode;
+                }
+                else {
+                    prev.nextNode = node.nextNode
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    clear() {
+        for(let i = 0; i < this.arr.length; i++) {
+            this.arr[i] = null;
+        }
+    }
+
+    keys() {
+        return this.keyArr;
+    }
+
+    values() {
+        return this.valueArr;
+    }
+
+    entries() {
+        let keyValueArr = []
+        for(let i = 0; i < this.keyArr.length; i++) {
+            keyValueArr.push([this.keyArr[i]], [this.valueArr[i]]);
+        }
+        return keyValueArr;
+    }
+    
     getCapacity() {
-        return this.capacity;
+        return this.arr;
     }
 }
 
@@ -107,6 +173,15 @@ test.set('jacket', 'blue')
 test.set('kite', 'pink')
 test.set('lion', 'golden')
 
-console.log(test.get());
+
+console.log(test.get('lion'));
+console.log(test.has('apple'));
+console.log(test.has('kite'));
+console.log(test.has('meow'));
+console.log(test.remove("carrot"));
+
 console.log(test.length());
+console.log(test.keys());
+console.log(test.values());
+console.log(test.entries());
 console.log(test.getCapacity());
