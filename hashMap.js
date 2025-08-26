@@ -11,7 +11,7 @@ class HashMap {
         this.loadFactor = loadFactor;
         this.capacity = 16;
         this.head = null;
-        this.arr = new Array(16).fill(undefined);
+        this.arr = new Array(16).fill(null);
         this.keyArr = [];
         this.valueArr = [];
         this.alreadyPresent = false;
