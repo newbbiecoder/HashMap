@@ -55,7 +55,7 @@ class HashMap {
         let factor = nodesFilled / this.capacity;
 
         if(factor > this.loadFactor) {
-            this.capacity *= 2
+            this.resize();
         }
 
         if(typeof this.arr[index] === 'undefined'){
@@ -152,9 +152,19 @@ class HashMap {
         }
         return keyValueArr;
     }
-    
-    getCapacity() {
-        return this.arr;
+
+    resize() {
+        let oldArr = this.arr;
+        this.capacity *= 2;
+        this.arr = new Array(this.capacity).fill(null);
+
+        for(let bucket of oldArr) {
+            let node = bucket;
+            while(node) {
+                this.set(node.key, node.value);
+                node = node.nextNode;
+            }
+        }
     }
 }
 
@@ -174,14 +184,26 @@ test.set('kite', 'pink')
 test.set('lion', 'golden')
 
 
-console.log(test.get('lion'));
-console.log(test.has('apple'));
-console.log(test.has('kite'));
-console.log(test.has('meow'));
-console.log(test.remove("carrot"));
+console.log(test);
+console.log(test.length());
+
+test.set('parrot', 'green');
+test.set('crow', 'black');
 
 console.log(test.length());
-console.log(test.keys());
-console.log(test.values());
-console.log(test.entries());
-console.log(test.getCapacity());
+console.log(test);
+
+
+// SOME MORE TEST CASES ( FEEL FREE TO UNCOMMENT THEM TO TEST ;) )
+
+// console.log(test.get('lion'));
+// console.log(test.has('apple'));
+// console.log(test.has('kite'));
+// console.log(test.has('meow'));
+// console.log(test.remove("carrot"));
+
+// console.log(test.length());
+// console.log(test.keys());
+// console.log(test.values());
+// console.log(test.entries());
+// console.log(test.getCapacity());
